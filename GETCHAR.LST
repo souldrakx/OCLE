@@ -1,0 +1,230 @@
+Turbo Assembler	 Version 2.01	     10/17/18 17:50:26	    Page 1
+getchar.ASM
+
+
+
+      1	0000			     MODEL small
+      2	0000				.STACK 100h
+      3
+      4				     INCLUDE procs.inc
+1     5				     ;**********************************************************************
+1     6				     ; Rutina: clrscr
+1     7				     ; Descripcion: borra pantalla haciendo uso	de la interrupción
+1     8				     ;		    10H	servicio 0 c
+1     9				     ;	      Nota:  Realmente hace un set screen modo 3 ( 80 x	25 16 colores)
+1    10				     ;
+1    11				     ; Parametros:
+1    12				     ;	  Entrada:  ninguno
+1    13				     ;	  Salida:   ninguno
+1    14				     ;**********************************************************************
+1    15					extrn clrscr:near
+1    16
+1    17
+1    18				     ;**********************************************************************
+1    19				     ; Rutina: putchar
+1    20				     ; Descripcion: procedimiento que desplegar	un caracter en pantalla
+1    21				     ;		    en la posición actual del cursor haciendo uso de la
+1    22				     ;		    int	21h servicio 02h del S.O.
+1    23				     ;	      Nota: el cursos es actualizado a la siguiente posicion
+1    24				     ;
+1    25				     ; Parametros:
+1    26				     ;	  Entrada:  AL contiene	el caracter a desplegar
+1    27				     ;	  Salida:
+1    28				     ;**********************************************************************
+1    29					extrn putchar:near
+1    30
+1    31
+1    32				     ;**********************************************************************
+1    33				     ; Rutina: puts
+1    34				     ; Descripcion: Despliega una cadena  terminada en 0 (null)
+1    35				     ;
+1    36				     ;	Parametros:
+1    37				     ;	   Entrada:  dx	 contiene el aputador a	la cadena a imprimir
+1    38				     ;	    Salida:  ninguno
+1    39				     ;**********************************************************************
+1    40					     extrn puts:near
+1    41
+1    42
+1    43				     ;**********************************************************************
+1    44				     ; Rutina: getchar
+1    45				     ; Descripcion: procedimiento que leer un caracter del teclado haciendo
+1    46				     ;		    uso	de la int 21h servicio 01h del S.O.
+1    47				     ;	      Nota: 1) La ejecución del programa se teniene en	espera de la tecla
+1    48				     ;		    2) Si se muestra el	caracter tecleado en pantalla
+1    49				     ; Parametros:
+1    50				     ;	  Entrada:
+1    51				     ;	  Salida:   AL contiene	el caracter tecleado
+1    52				     ;**********************************************************************
+1    53					extrn getchar:near
+1    54
+1    55
+1    56				     ;**********************************************************************
+1    57				     ; Rutina: getch
+Turbo Assembler	 Version 2.01	     10/17/18 17:50:26	    Page 2
+getchar.ASM
+
+
+
+1    58				     ; Descripcion: procedimiento que leer un caracter del teclado haciendo
+1    59				     ;		    uso	de la int 21h servicio 08h del S.O.
+1    60				     ;	      Nota: 1) La ejecución del programa se teniene en	espera de la tecla
+1    61				     ;		    2) No se muestra el	caracter tecleado en pantalla
+1    62				     ; Parametros:
+1    63				     ;	  Entrada:
+1    64				     ;	  Salida:   AL contiene	el caracter tecleado
+1    65				     ;**********************************************************************
+1    66					extrn getch:near
+1    67
+1    68
+1    69				     ;**********************************************************************
+1    70				     ; Rutina: gotoxy
+1    71				     ; Descripcion: posiciona el cursor	en la posicion dada por	BH y BL	haciendo
+1    72				     ;		    uso	de la interrupción 10H	servicio 02 del	BIOS
+1    73				     ; Parametros:
+1    74				     ;	  Entrada:  BH posicion	 x (columna)
+1    75				     ;		    BL posicion	 y (renglon)
+1    76				     ;	  Salida:   ninguno
+1    77				     ;**********************************************************************
+1    78					extrn gotoxy:near
+1    79
+1    80
+1    81				     ;**********************************************************************
+1    82				     ; Rutina: kbhit
+1    83				     ; Descripcion: procedimiento que verifica si se presionó tecla
+1    84				     ;
+1    85				     ;	       Nota: no	espera telca y no toma tecla del teclado. Si se	desea
+1    86				     ;		     tomar la tecla deberá llamarse a getchar o getch despues
+1    87				     ;		     de	que se ha detectado que	se oprimó tecla;
+1    88				     ; Parametros:
+1    89				     ;	  Entrada:  ninguno
+1    90				     ;	  Salida:   AH=0 si no hay tecla AH=1 si hay tecla
+1    91				     ;		    AL=TECLA
+1    92				     ;**********************************************************************
+1    93					extrn kbhit:near   ; AH=0 si no	hay tecla AH=1 si hay tecla
+1    94							   ; AL=TECLA
+1    95
+1    96
+     97
+     98					 LOCALS
+     99
+    100	0000			     .DATA
+    101	0000  64*(??) 0A 0D 00		 cad db	100 dup(?),10,13,0
+    102
+    103	0067  4D 65 74 6F 64 6F	20+	 inicio	db 'Metodo GETCHAR',13,10,0
+    104	      47 45 54 43 48 41	52+
+    105	      0D 0A 00
+    106	0078  45 73 63 72 69 62	65+	 mens db 'Escribe una cadena: ',0
+    107	      20 75 6E 61 20 63	61+
+    108	      64 65 6E 61 3A 20	00
+    109	008D  54 75 20 63 61 64	65+	 mens1 db 'Tu cadena es: ',0
+    110	      6E 61 20 65 73 3A	20+
+    111	      00
+    112
+    113	009C			     .CODE
+    114
+Turbo Assembler	 Version 2.01	     10/17/18 17:50:26	    Page 3
+getchar.ASM
+
+
+
+    115	0000				 Principal   PROC
+    116	0000  B8 0000s				     mov ax,@data    ;Inicializar DS al	la direccion
+    117	0003  8E D8				     mov ds,ax	     ; del segmento de datos (.DATA)
+    118
+    119	0005  E8 0000e				     call clrscr     ;limpiar pantalla
+    120
+    121	0008  BA 0067r			     mov dx,offset inicio
+    122	000B  E8 0000e			     call puts
+    123
+    124	000E  BA 0078r			     mov dx,offset mens
+    125	0011  E8 0000e			     call puts
+    126
+    127	0014  BE 0000			     mov si,00h
+    128
+    129	0017				     @@leer:
+    130
+    131	0017  3C 41			     cmp al,41h
+    132	0019  72 FC			     jb	@@leer
+    133	001B  3C 5A			     cmp al,5Ah
+    134	001D  72 11			     jb	@@cap
+    135
+    136	001F  3C 61			     cmp al,61h
+    137	0021  72 F4			     jb	@@leer
+    138	0023  3C 7A			     cmp al,7Ah
+    139	0025  72 09			     jb	@@cap
+    140	0027  77 EE			     ja	@@leer
+    141	0029  B8 0000			     mov ax,0000
+    142	002C  B4 01			     mov ah,01h
+    143	002E  CD 21			     int 21h
+    144
+    145
+    146
+    147	0030				     @@cap:
+    148	0030  88 84 0000r		     mov cad[si],al
+    149	0034  46			     inc si
+    150
+    151	0035  3C 0D			     cmp al,0dh
+    152	0037  77 DE			     ja	@@leer
+    153	0039  72 DC			     jb	@@leer
+    154	003B  74 00			     je	@@print
+    155
+    156
+    157	003D			     @@print:
+    158	003D  BA 008Dr			     mov dx,offset mens1
+    159	0040  E8 0000e			     call puts
+    160
+    161
+    162	0043  BA 0000r			     mov dx,offset cad
+    163	0046  E8 0000e			     call puts
+    164
+    165	0049  B4 4C			     mov ah,04ch	  ; fin	de programa
+    166	004B  B0 00				     mov al,0		  ;
+    167	004D  CD 21				     int 21h		  ;
+    168
+    169
+    170	004F				     ENDP
+    171				     END
+Turbo Assembler	 Version 2.01	     10/17/18 17:50:26	    Page 4
+Symbol Table
+
+
+
+
+Symbol Name		Type   Value			   Cref	(defined at #)
+
+??DATE			Text   "10/17/18"
+??FILENAME		Text   "getchar	"
+??TIME			Text   "17:50:26"
+??VERSION		Number 0201
+@@CAP			Near   _TEXT:0030		   134	139  #147
+@@LEER			Near   _TEXT:0017		   #129	 132  137  140	152  153
+@@PRINT			Near   _TEXT:003D		   154	#157
+@CODE			Text   _TEXT			   #1  #1  #113
+@CODESIZE		Text   0			   #1
+@CPU			Text   0101H
+@CURSEG			Text   _TEXT			   #100	 #113
+@DATA			Text   DGROUP			   #1  116
+@DATASIZE		Text   0			   #1
+@FILENAME		Text   GETCHAR
+@MODEL			Text   2			   #1
+@WORDSIZE		Text   2			   #100	 #113
+CAD			Byte   DGROUP:0000		   #101	 148  162
+CLRSCR			Near   ----:---- Extern		   #15	119
+GETCH			Near   ----:---- Extern		   #66
+GETCHAR			Near   ----:---- Extern		   #53
+GOTOXY			Near   ----:---- Extern		   #78
+INICIO			Byte   DGROUP:0067		   #103	 121
+KBHIT			Near   ----:---- Extern		   #93
+MENS			Byte   DGROUP:0078		   #106	 124
+MENS1			Byte   DGROUP:008D		   #109	 158
+PRINCIPAL		Near   _TEXT:0000		   #115
+PUTCHAR			Near   ----:---- Extern		   #29
+PUTS			Near   ----:---- Extern		   #40	122  125  159  163
+
+Groups & Segments	Bit Size Align	Combine	Class	   Cref	(defined at #)
+
+DGROUP			Group				   #1  1  116
+  STACK			16  0100 Para	Stack	STACK	   #2
+  _DATA			16  009C Word	Public	DATA	   #1  #100
+_TEXT			16  004F Word	Public	CODE	   #1  1  #113	113
+

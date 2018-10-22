@@ -6,12 +6,11 @@ INCLUDE procs.inc
     LOCALS
 
 .DATA
-    cad db 100 dup(?)
+    cad db 100 dup(?),10,13,0
 
-    inicio db 'Metodo GETNUM',13,10,0
+    inicio db 'Metodo GETCHAR',13,10,0
     mens db 'Escribe una cadena: ',0
     mens1 db 'Tu cadena es: ',0
-
 
 .CODE
 
@@ -34,11 +33,13 @@ INCLUDE procs.inc
         mov ah,01h
         int 21h
         
-        cmp al,30h
+        cmp al,41h
         ja @@leer
-        cmp al,39h
+        cmp al,5Ah
         jb @@leer
-
+        cmp al,61h
+        
+        cmp al,7Ah
         
         @@cap:        
         mov cad[si],al
@@ -61,7 +62,6 @@ INCLUDE procs.inc
 
         mov dx,offset cad
         call puts
-
        
         mov ah,04ch	     ; fin de programa
 		mov al,0             ;
