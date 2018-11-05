@@ -1,16 +1,29 @@
 MODEL small
    .STACK 100h
 
-INCLUDE procs.inc
+   ;----- Insert INCLUDE "filename" directives here
+   ;----- Insert EQU and = equates here
+
+ INCLUDE procs.inc
  
-    LOCALS
+       LOCALS
 
-.DATA
+   .DATA
+      mens       db  'Hola Mundo',0
+	contador db 0
+	bandera  db 0
+	
+	segundos	dw 50
+	minutos		dw 59
+	horas		dw 23
+	puntos		db ':',0
+	salto		db 13,10,0
 
-.CODE
+   .CODE
+    ;-----   Insert program, subrutine call, etc., here
 
     Principal  	PROC
-		mov ax,0
+				mov ax,0
 				mov ds,ax
 				mov bx,70h
 				mov word ptr[bx],offset RSI
@@ -94,6 +107,44 @@ INCLUDE procs.inc
 				mov al,0             ;
 				int 21h              ; 
 
-        
-        ENDP
-END
+                ENDP
+				
+				RSI 		PROC ;Int 1CH
+						inc contador
+						cmp contador,18
+						jne @@falso
+						
+						mov bandera,1
+						
+				@@falso:
+						iret
+				ENDP
+				
+				printDec PROC
+							push ax
+							push bx
+							push cx
+							push dx
+							mov cx,2
+							mov bx,10
+							mov ah,0
+					@@nxt:  mov dx,0
+							div bx
+							add al,'0'
+							call putchar
+							mov ax,dx
+							push ax
+							mov dx,0
+							mov ax,bx
+							mov bx,10
+							div bx
+							mov bx,ax
+							pop ax
+							loop @@nxt
+							pop dx
+							pop cx
+							pop bx
+							pop ax 
+							ret
+				ENDP
+   END

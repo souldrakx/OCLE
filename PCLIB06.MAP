@@ -1,0 +1,11 @@
+
+ Start  Stop   Length Name               Class
+
+ 00000H 00080H 00081H _TEXT              CODE
+ 00090H 00125H 00096H _DATA              DATA
+ 00130H 0022FH 00100H STACK              STACK
+
+Error: Undefined symbol CLRSCR in module GETCHAR2.ASM
+Error: Undefined symbol PUTS in module GETCHAR2.ASM
+Program entry point at 0000:0000
+
