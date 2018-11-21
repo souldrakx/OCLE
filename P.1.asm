@@ -13,9 +13,11 @@ MODEL small
 
 		call clrscr     ;limpiar pantalla
 
+        xor ax,ax
+        mov ax,17
 
+        call ConjCollatz
 
-       
         mov ah,04ch	     ; fin de programa
 		mov al,0             ;
 		int 21h              ; 
@@ -34,5 +36,42 @@ MODEL small
         int 10h
 
         ret
+    ENDP
+
+    saltoL PROC
+        push ax
+        mov dl,13
+        mov ah,02h
+        int 21h
+        mov dl,10
+        int 21h
+        pop ax
+        ret
+    ENDP
+
+    ConjCollatz PROC
+
+        
+        mov bx,02h
+
+        @@return:
+        mov cx,ax
+        div bl
+
+        cmp ah,0
+        jne @@impar
+
+        cmp al,
+
+
+        @@impar:
+        mov ax,cx
+        mul ax,3
+        inc ax
+        jmp@@return
+
+
+
+
     ENDP
 END
