@@ -130,37 +130,37 @@ MODEL small
     ENDP
 
     toUpper PROC
-    push si
-    push dx
-    push ax
+        push si
+        push dx
+        push ax
 
-    xor ax,ax
-    xor si,si
+        xor ax,ax
+        xor si,si
 
-    mov si,offset cad
+        mov si,offset cad
 
-    @@lop:
-    mov al,[si]
-    cmp al,'$'
-    je @@finU
-    cmp al,61h
-    jb @@mayus 
-    inc si
-    jmp @@lop
+        @@lop:
+        mov al,[si]
+        cmp al,'$'
+        je @@finU
+        cmp al,61h
+        jb @@mayus 
+        inc si
+        jmp @@lop
 
-    @@mayus:
-    add al,20h
-    mov [si],al
-    inc si
-    jmp @@lop
+        @@mayus:
+        add al,20h
+        mov [si],al
+        inc si
+        jmp @@lop
 
-    @@finU:
+        @@finU:
 
-    pop ax
-    pop dx
-    pop si
+        pop ax
+        pop dx
+        pop si
 
-    ret
+        ret
     ENDP
 
     palin PROC

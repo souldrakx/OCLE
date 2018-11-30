@@ -52,44 +52,67 @@ MODEL small
     ENDP
 
     ConjCollatz PROC
+
+        push bx
+        push cx
+        push dx
+        push si
+        xor si,si
+        xor cx,cx
         
-        mov bx,02h
+        mov bx,2
+        mov dx,3
 
         @@return:
-        mov cx,ax
+        mov si,ax
         div bl
 
+        cmp al,1
+        
+        je @@fin
         cmp ah,0
         jne @@impar
-
-        cmp al,1
-        je @@fin
+        inc cx
+        
         jmp @@return
 
 
         @@impar:
-        mov ax,cx
-        mul ax,3
+        mov ax,si
+        
+        
+        mul dl
+        
         inc ax
-        jmp@@return
+        inc cx
+        jmp @@return
 
         @@fin:
+        inc cx
+        xor ax,ax
+        mov al,cl
 
+        pop si
+        pop dx
+        pop cx
+        pop bx
         ret
 
     ENDP
-    
+
     printNumBase PROC
         push ax
         push bx
         push cx
         push dx
 
+        mov bx,10
 
-        mov cx,0 ;initialize counter in cero
+
+        mov cx,0 
         @@nxt:	
         xor dx,dx 
-        div bx  ;divide DX:AX/BX
+        div bx  
         push dx 
         inc cx
         cmp ax,0
@@ -97,12 +120,12 @@ MODEL small
 
         @@verif:
         pop ax
-        cmp ax,0ah ; check if the quotient of ax is less than 10
+        cmp ax,0ah 
         jb @@less
         add ax,07h
             
         @@less: 
-        add ax,30h ;convert quotient to ASCII
+        add ax,30h 
 
         mov dx,ax
         mov ah,02h
